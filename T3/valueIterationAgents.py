@@ -64,7 +64,13 @@ class ValueIterationAgent(ValueEstimationAgent):
           Run the value iteration algorithm. Note that in standard
           value iteration, V_k+1(...) depends on V_k(...)'s.
         """
-        "*** YOUR CODE HERE ***"
+        new_values = self.values.copy()
+        for _ in range(self.iterations):
+            for state in self.mdp.getStates():
+                if self.mdp.isTerminal(state):
+                    continue
+                new_values[state] = max([self.getQValue(state, action) for action in self.mdp.getPossibleActions(state)])
+            self.values = new_values.copy()
 
     def getValue(self, state):
         """
@@ -77,8 +83,10 @@ class ValueIterationAgent(ValueEstimationAgent):
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        retval = 0
+        for next_state, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+            retval += prob * (self.mdp.getReward(state, action, next_state) + self.discount * self.getValue(next_state))
+        return retval
 
     def computeActionFromValues(self, state):
         """
